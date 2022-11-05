@@ -42,6 +42,7 @@ function addRecipesToDocument(recipes) {
   //            create a <recipe-card> element for each one, and populate
   //            each <recipe-card> with that recipe data using element.data = ...
   //            Append each element to <main>
+  if(recipes.length == 0) {return;}
   for(var i = 0; i < recipes.length; i++){
     var newCard = document.createElement("recipe-card");
     newCard.data = recipes[i];
@@ -59,6 +60,7 @@ function saveRecipesToStorage(recipes) {
   // B1. TODO - Complete the functionality as described in this function
   //            header. It is possible in only a single line, but should
   //            be no more than a few lines.
+  localStorage.setItem('recipes', JSON.stringify(recipes));
 }
 
 /**
@@ -68,9 +70,52 @@ function saveRecipesToStorage(recipes) {
 function initFormHandler() {
 
   // B2. TODO - Get a reference to the <form> element
-  
+  var form = document.getElementById('new-recipe');
   // B3. TODO - Add an event listener for the 'submit' event, which fires when the
   //            submit button is clicked
+  var button = document.querySelectorAll('button');
+  button[0].addEventListener('click', (event) => {
+    var formdata = new FormData(form);
+    var imgSrc = document.getElementById('imgSrc').value;
+    var imgAlt = document.getElementById('imgAlt').value;
+    var titleLnk = document.getElementById('titleLnk').value;
+    var titleTxt = document.getElementById('titleTxt').value;
+    var organization = document.getElementById('organization').value;
+    var ratings = document.getElementsByName('rating');
+    var rating = 0;
+    for(var i = 0; i < ratings.length; i++) {
+      if(ratings[i].checked) {
+        rating = i;
+      }
+    }
+    var numRatings = document.getElementById('numRatings').value;
+    var lengthTime = document.getElementById('lengthTime').value;
+    var ingredients = document.getElementById('ingredients').value;
+    var rObj = {
+      "imgSrc": imgSrc,
+      "imgAlt": imgAlt,
+      "titleLnk": titleLnk,
+      "titleTxt": titleTxt,
+      "organization": organization,
+      "rating": rating,
+      "numRatings": numRatings,
+      "lengthTime": lengthTime,
+      "ingredients": ingredients
+    }
+    var newCard = document.createElement("recipe-card");
+    newCard.data = rObj;
+    var mainE = document.querySelector('main');
+    mainE.append(newCard);
+    var recipes = JSON.parse(localStorage.getItem("recipes"));
+    recipes.push(rObj);
+    saveRecipesToStorage(recipes);
+  });
+
+  button[1].addEventListener('click', (event) => {
+    localStorage.clear();
+    var mainE = document.querySelector('main');
+    mainE.innerHTML = ``;
+  });
 
   // Steps B4-B9 will occur inside the event listener from step B3
   // B4. TODO - Create a new FormData object from the <form> element reference above
